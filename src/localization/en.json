@@ -38,5 +38,11 @@
   "task_marked_complete": "Task {id} marked as complete.",
   "task_deleted": "Task '{title}' deleted successfully.",
   "error": "Error: {message}",
-  "unexpected_error": "An unexpected error occurred: {message}"
+  "unexpected_error": "An unexpected error occurred: {message}",
+  "appearance": "Appearance",
+  "dark_mode": "Dark Mode",
+  "light_mode": "Light Mode",
+  "psychedelic_mode": "Psychedelic Mode",
+  "enable_dark_mode": "Enable Dark Mode",
+  "enable_psychedelic_mode": "Enable Psychedelic Mode"
 }
