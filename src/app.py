@@ -112,9 +112,6 @@ def main():
     # Get current language
     lang = st.session_state.language
     
-    # Apply dark mode if enabled
-    apply_dark_mode()
-    
     st.set_page_config(
         page_title=get_text("app_title", lang),
         page_icon="✅",
@@ -141,10 +138,12 @@ def main():
         index=list(LANGUAGES.keys()).index(lang)
     )
     
-    # Update language if changed
+    # Update language or dark mode if changed
+    settings_changed = False
+    
     if selected_language != lang:
         st.session_state.language = selected_language
-        st.rerun()
+        settings_changed = True
     
     # Dark mode toggle
     st.sidebar.title(get_text("appearance", lang))
@@ -153,9 +152,15 @@ def main():
         value=st.session_state.dark_mode
     )
     
-    # Update dark mode if changed
     if dark_mode != st.session_state.dark_mode:
         st.session_state.dark_mode = dark_mode
+        settings_changed = True
+    
+    # Apply dark mode immediately
+    apply_dark_mode()
+    
+    # Rerun if any settings changed
+    if settings_changed:
         st.rerun()
     
     # Navigation options
