@@ -63,18 +63,23 @@ class TestStreamlitFunctions(unittest.TestCase):
             mock_task_service.search_tasks.return_value = []
 
             # Mock sidebar toggle to return True (dark mode enabled)
+            # Import our mock columns
+            from tests.mock_columns import create_mock_columns
+            
             with patch('streamlit.sidebar.toggle', return_value=True), \
                  patch('src.app.TaskService', return_value=mock_task_service), \
                  patch('streamlit.markdown'), \
                  patch('streamlit.set_page_config'), \
                  patch('streamlit.container'), \
-                 patch('streamlit.columns'), \
+                 patch('streamlit.columns', return_value=create_mock_columns(2)), \
                  patch('streamlit.expander'), \
                  patch('streamlit.title'), \
+                 patch('streamlit.header'), \
                  patch('streamlit.write'), \
                  patch('streamlit.sidebar.title'), \
                  patch('streamlit.sidebar.selectbox', return_value='en'), \
-                 patch('streamlit.sidebar.radio', return_value='View Tasks'):
+                 patch('streamlit.sidebar.radio', return_value='View Tasks'), \
+                 patch('streamlit.radio', return_value='all'):
                 
                 # Run the main function
                 main()
