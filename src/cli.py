@@ -17,6 +17,9 @@ from src.localization.translations import get_text, LANGUAGES
 
 def main():
     """Main function to handle command-line arguments."""
+    # Get the language from environment variable if set, otherwise use default
+    default_lang = os.environ.get("TASK_MANAGER_LANG", "en")
+    
     # Create the main parser
     parser = argparse.ArgumentParser(description="Task Manager - A CLI task management app")
     
@@ -25,55 +28,52 @@ def main():
         "-l", "--language", 
         help="Language for the interface", 
         choices=list(LANGUAGES.keys()), 
-        default="en"
+        default=default_lang
     )
     
-    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
+    # Create subparsers for commands
+    subparsers = parser.add_subparsers(dest="command", help="Command to execute", required=True)
 
-    # Get the language from environment variable if set, otherwise use default
-    default_lang = os.environ.get("TASK_MANAGER_LANG", "en")
-    
-    # Parse known args first to get the language
-    args, remaining = parser.parse_known_args()
-    lang = args.language or default_lang
-    
     # Add task command
-    add_parser = subparsers.add_parser("add", help=get_text("add_task", lang))
-    add_parser.add_argument("title", help=get_text("title", lang))
-    add_parser.add_argument("-d", "--description", help=get_text("description", lang), default="")
+    add_parser = subparsers.add_parser("add", help=get_text("add_task", default_lang))
+    add_parser.add_argument("title", help=get_text("title", default_lang))
+    add_parser.add_argument("-d", "--description", help=get_text("description", default_lang), default="")
     add_parser.add_argument(
         "-p", "--priority", 
-        help=get_text("priority", lang), 
+        help=get_text("priority", default_lang), 
         choices=["low", "medium", "high"], 
         default="medium"
     )
 
     # List tasks command
-    list_parser = subparsers.add_parser("list", help=get_text("view_tasks", lang))
+    list_parser = subparsers.add_parser("list", help=get_text("view_tasks", default_lang))
     list_parser.add_argument(
         "-a", "--all", 
-        help=get_text("show_completed_tasks", lang), 
+        help=get_text("show_completed_tasks", default_lang), 
         action="store_true"
     )
 
     # Complete task command
-    complete_parser = subparsers.add_parser("complete", help=get_text("mark_as_complete", lang))
-    complete_parser.add_argument("id", type=int, help=get_text("id", lang))
+    complete_parser = subparsers.add_parser("complete", help=get_text("mark_as_complete", default_lang))
+    complete_parser.add_argument("id", type=int, help=get_text("id", default_lang))
 
     # Delete task command
-    delete_parser = subparsers.add_parser("delete", help=get_text("task_deleted", lang))
-    delete_parser.add_argument("id", type=int, help=get_text("id", lang))
+    delete_parser = subparsers.add_parser("delete", help=get_text("task_deleted", default_lang))
+    delete_parser.add_argument("id", type=int, help=get_text("id", default_lang))
 
     # Search tasks command
-    search_parser = subparsers.add_parser("search", help=get_text("search_tasks", lang))
-    search_parser.add_argument("keyword", help=get_text("search_for_tasks", lang))
+    search_parser = subparsers.add_parser("search", help=get_text("search_tasks", default_lang))
+    search_parser.add_argument("keyword", help=get_text("search_for_tasks", default_lang))
 
     # View task command
-    view_parser = subparsers.add_parser("view", help=get_text("view", lang))
-    view_parser.add_argument("id", type=int, help=get_text("id", lang))
+    view_parser = subparsers.add_parser("view", help=get_text("view", default_lang))
+    view_parser.add_argument("id", type=int, help=get_text("id", default_lang))
 
-    # Parse the remaining arguments
+    # Parse arguments once after all parsers are defined
     args = parser.parse_args()
+    
+    # Update language if specified in arguments
+    lang = args.language
     
     # Initialize the task service
     config_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
@@ -81,8 +81,7 @@ def main():
     storage_file = os.path.join(config_dir, "tasks.json")
     task_service = TaskService(storage_file)
 
-    # Get the language from the parsed arguments
-    lang = args.language or default_lang
+    # Language is already set from the parsed arguments
 
     try:
         if args.command == "add":
