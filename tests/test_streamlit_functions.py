@@ -42,11 +42,10 @@ class TestStreamlitFunctions(unittest.TestCase):
                     mock_rerun.assert_called_once()
 
     @patch('streamlit.rerun')
-    @patch('streamlit.markdown')
-    def test_dark_mode_toggle(self, mock_markdown, mock_rerun):
-        """Test that the dark mode toggle works correctly."""
-        # Import the main function and apply_dark_mode function from app.py
-        from src.app import main, apply_dark_mode
+    def test_dark_mode_toggle_main(self, mock_rerun):
+        """Test that dark mode toggle in main() triggers rerun."""
+        # Import the main function
+        from src.app import main
         
         # Mock session_state to simulate dark mode toggle
         with patch('streamlit.session_state') as mock_session_state:
@@ -56,28 +55,59 @@ class TestStreamlitFunctions(unittest.TestCase):
             mock_session_state.dark_mode = False
             mock_session_state.get.return_value = False
             
+            # Mock TaskService and task list to avoid any task rendering
+            mock_task_service = MagicMock()
+            mock_task_service.get_tasks.return_value = []
+            mock_task_service.get_task.return_value = None
+            mock_task_service.get_task_by_title.return_value = None
+            mock_task_service.search_tasks.return_value = []
+
             # Mock sidebar toggle to return True (dark mode enabled)
-            with patch('streamlit.sidebar.toggle', return_value=True):
-                # Mock other necessary Streamlit functions to prevent errors
-                with patch('streamlit.set_page_config'), \
-                     patch('streamlit.title'), \
-                     patch('streamlit.write'), \
-                     patch('streamlit.sidebar.title'), \
-                     patch('streamlit.sidebar.selectbox', return_value='en'), \
-                     patch('streamlit.sidebar.radio', return_value='View Tasks'):
-                    
-                    # Run the main function
-                    main()
-                    
-                    # Check if st.rerun() was called when dark mode is toggled
-                    mock_rerun.assert_called_once()
-            
-            # Test apply_dark_mode function with dark mode enabled
+            with patch('streamlit.sidebar.toggle', return_value=True), \
+                 patch('src.app.TaskService', return_value=mock_task_service), \
+                 patch('streamlit.markdown'), \
+                 patch('streamlit.set_page_config'), \
+                 patch('streamlit.container'), \
+                 patch('streamlit.columns'), \
+                 patch('streamlit.expander'), \
+                 patch('streamlit.title'), \
+                 patch('streamlit.write'), \
+                 patch('streamlit.sidebar.title'), \
+                 patch('streamlit.sidebar.selectbox', return_value='en'), \
+                 patch('streamlit.sidebar.radio', return_value='View Tasks'):
+                
+                # Run the main function
+                main()
+                
+                # Check if st.rerun() was called when dark mode is toggled
+                mock_rerun.assert_called_once()
+
+    def test_apply_dark_mode(self):
+        """Test that apply_dark_mode applies dark mode CSS when enabled."""
+        # Import apply_dark_mode function
+        from src.app import apply_dark_mode
+
+        # Create new mocks for streamlit functions
+        with patch('streamlit.markdown') as mock_markdown, \
+             patch('streamlit.session_state') as mock_session_state, \
+             patch('src.app.TaskService') as mock_task_service:
+
+            # Configure task service mock to return empty results
+            mock_task_svc = MagicMock()
+            mock_task_svc.get_tasks.return_value = []
+            mock_task_svc.get_task.return_value = None  
+            mock_task_svc.get_task_by_title.return_value = None
+            mock_task_svc.search_tasks.return_value = []
+            mock_task_service.return_value = mock_task_svc
+
+            # Configure session state for dark mode enabled
             mock_session_state.get.return_value = True
-            apply_dark_mode()
             
-            # Check if st.markdown was called with CSS content
-            mock_markdown.assert_called_once()
+            # Apply dark mode
+            apply_dark_mode()
+
+            # Verify markdown was called once with CSS
+            self.assertEqual(mock_markdown.call_count, 1)
             css_arg = mock_markdown.call_args[0][0]
             self.assertIn('<style>', css_arg)
             self.assertIn('background-color: #121212', css_arg)
