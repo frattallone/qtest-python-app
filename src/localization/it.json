@@ -38,5 +38,9 @@
   "task_marked_complete": "Attività {id} segnata come completata.",
   "task_deleted": "Attività '{title}' eliminata con successo.",
   "error": "Errore: {message}",
-  "unexpected_error": "Si è verificato un errore imprevisto: {message}"
+  "unexpected_error": "Si è verificato un errore imprevisto: {message}",
+  "appearance": "Aspetto",
+  "dark_mode": "Modalità Scura",
+  "light_mode": "Modalità Chiara",
+  "enable_dark_mode": "Attiva Modalità Scura"
 }

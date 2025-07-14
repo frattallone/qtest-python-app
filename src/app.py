@@ -14,11 +14,100 @@ from src.utils.exceptions import TaskNotFoundException
 from src.localization.translations import get_text, LANGUAGES
 
 
+def apply_dark_mode():
+    """Apply dark mode styling if enabled."""
+    if st.session_state.get('dark_mode', False):
+        # Dark mode CSS
+        dark_mode_css = """
+        <style>
+            /* Main background */
+            .stApp {
+                background-color: #121212;
+                color: #E0E0E0;
+            }
+            
+            /* Sidebar */
+            section[data-testid="stSidebar"] {
+                background-color: #1E1E1E;
+                border-right: 1px solid #333333;
+            }
+            
+            /* Headers */
+            h1, h2, h3, h4, h5, h6 {
+                color: #FFFFFF !important;
+            }
+            
+            /* Text */
+            p, li, div {
+                color: #E0E0E0;
+            }
+            
+            /* Containers */
+            div.stBlock {
+                background-color: #1E1E1E;
+                border: 1px solid #333333;
+            }
+            
+            /* Inputs */
+            div.stTextInput > div > div > input {
+                background-color: #2D2D2D;
+                color: #E0E0E0;
+                border-color: #444444;
+            }
+            
+            div.stTextArea > div > div > textarea {
+                background-color: #2D2D2D;
+                color: #E0E0E0;
+                border-color: #444444;
+            }
+            
+            div.stSelectbox > div > div > div {
+                background-color: #2D2D2D;
+                color: #E0E0E0;
+                border-color: #444444;
+            }
+            
+            /* Buttons */
+            button {
+                background-color: #2D2D2D !important;
+                color: #E0E0E0 !important;
+                border-color: #444444 !important;
+            }
+            
+            button:hover {
+                background-color: #3D3D3D !important;
+                border-color: #555555 !important;
+            }
+            
+            /* Expanders */
+            div.streamlit-expanderHeader {
+                background-color: #2D2D2D;
+                color: #E0E0E0;
+            }
+            
+            div.streamlit-expanderContent {
+                background-color: #1E1E1E;
+                color: #E0E0E0;
+            }
+            
+            /* Dividers */
+            hr {
+                border-color: #333333;
+            }
+        </style>
+        """
+        st.markdown(dark_mode_css, unsafe_allow_html=True)
+
+
 def main():
     """Main function for the Streamlit application."""
     # Initialize session state for language if it doesn't exist
     if 'language' not in st.session_state:
         st.session_state.language = 'en'
+    
+    # Initialize session state for dark mode if it doesn't exist
+    if 'dark_mode' not in st.session_state:
+        st.session_state.dark_mode = False
     
     # Get current language
     lang = st.session_state.language
@@ -49,9 +138,29 @@ def main():
         index=list(LANGUAGES.keys()).index(lang)
     )
     
-    # Update language if changed
+    # Update language or dark mode if changed
+    settings_changed = False
+    
     if selected_language != lang:
         st.session_state.language = selected_language
+        settings_changed = True
+    
+    # Dark mode toggle
+    st.sidebar.title(get_text("appearance", lang))
+    dark_mode = st.sidebar.toggle(
+        get_text("enable_dark_mode", lang),
+        value=st.session_state.dark_mode
+    )
+    
+    if dark_mode != st.session_state.dark_mode:
+        st.session_state.dark_mode = dark_mode
+        settings_changed = True
+    
+    # Apply dark mode immediately
+    apply_dark_mode()
+    
+    # Rerun if any settings changed
+    if settings_changed:
         st.rerun()
     
     # Navigation options
