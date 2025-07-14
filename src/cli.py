@@ -32,7 +32,7 @@ def main():
     )
     
     # Create subparsers for commands
-    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
+    subparsers = parser.add_subparsers(dest="command", help="Command to execute", required=True)
 
     # Add task command
     add_parser = subparsers.add_parser("add", help=get_text("add_task", default_lang))
