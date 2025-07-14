@@ -34,7 +34,7 @@ class TestCLI(unittest.TestCase):
         self.assertIn("view", output)
 
     @patch('sys.argv', ['cli.py', 'add', 'Test Task'])
-    @patch('src.services.task_service.TaskService')
+    @patch('src.cli.TaskService')
     @patch('sys.stdout', new_callable=StringIO)
     def test_add_command(self, mock_stdout, mock_task_service):
         """Test that the add command works correctly."""
@@ -55,7 +55,7 @@ class TestCLI(unittest.TestCase):
         self.assertIn("1", output)
 
     @patch('sys.argv', ['cli.py', 'list'])
-    @patch('src.services.task_service.TaskService')
+    @patch('src.cli.TaskService')
     @patch('sys.stdout', new_callable=StringIO)
     def test_list_command(self, mock_stdout, mock_task_service):
         """Test that the list command works correctly."""
@@ -89,7 +89,7 @@ class TestCLI(unittest.TestCase):
         self.assertIn("medium", output.lower())
 
     @patch('sys.argv', ['cli.py', 'complete', '1'])
-    @patch('src.services.task_service.TaskService')
+    @patch('src.cli.TaskService')
     @patch('sys.stdout', new_callable=StringIO)
     def test_complete_command(self, mock_stdout, mock_task_service):
         """Test that the complete command works correctly."""
@@ -108,7 +108,7 @@ class TestCLI(unittest.TestCase):
         self.assertIn("1", output)
 
     @patch('sys.argv', ['cli.py', 'delete', '1'])
-    @patch('src.services.task_service.TaskService')
+    @patch('src.cli.TaskService')
     @patch('sys.stdout', new_callable=StringIO)
     def test_delete_command(self, mock_stdout, mock_task_service):
         """Test that the delete command works correctly."""
@@ -128,7 +128,7 @@ class TestCLI(unittest.TestCase):
         self.assertIn("Test Task", output)
 
     @patch('sys.argv', ['cli.py', 'search', 'test'])
-    @patch('src.services.task_service.TaskService')
+    @patch('src.cli.TaskService')
     @patch('sys.stdout', new_callable=StringIO)
     def test_search_command(self, mock_stdout, mock_task_service):
         """Test that the search command works correctly."""
@@ -151,7 +151,7 @@ class TestCLI(unittest.TestCase):
         self.assertIn("1", output)
 
     @patch('sys.argv', ['cli.py', 'view', '1'])
-    @patch('src.services.task_service.TaskService')
+    @patch('src.cli.TaskService')
     @patch('sys.stdout', new_callable=StringIO)
     def test_view_command(self, mock_stdout, mock_task_service):
         """Test that the view command works correctly."""
