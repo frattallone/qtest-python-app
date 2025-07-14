@@ -34,9 +34,15 @@ task_manager_project/
 ├── tests/                  # Test cases
 │   ├── test_task_model.py  # Tests for Task model
 │   ├── test_task_service.py# Tests for TaskService
-│   └── test_localization.py# Tests for localization
+│   ├── test_localization.py# Tests for localization
+│   └── test_streamlit_functions.py # Tests for Streamlit functionality
 └── requirements.txt        # Project dependencies
 ```
+
+## Recent Updates
+
+- Updated Streamlit function calls from `st.experimental_rerun()` to `st.rerun()` to be compatible with newer Streamlit versions
+- Added test case for Streamlit functionality
 
 ## Installation
 
