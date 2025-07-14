@@ -88,25 +88,23 @@ class TestStreamlitFunctions(unittest.TestCase):
                 mock_rerun.assert_called_once()
 
     def test_apply_dark_mode(self):
-        """Test that apply_dark_mode applies dark mode CSS when enabled."""
+        """Test that apply_dark_mode applies dark mode CSS when enabled and psychedelic mode is disabled."""
         # Import apply_dark_mode function
         from src.app import apply_dark_mode
 
         # Create new mocks for streamlit functions
         with patch('streamlit.markdown') as mock_markdown, \
-             patch('streamlit.session_state') as mock_session_state, \
-             patch('src.app.TaskService') as mock_task_service:
+             patch('streamlit.session_state') as mock_session_state:
 
-            # Configure task service mock to return empty results
-            mock_task_svc = MagicMock()
-            mock_task_svc.get_tasks.return_value = []
-            mock_task_svc.get_task.return_value = None  
-            mock_task_svc.get_task_by_title.return_value = None
-            mock_task_svc.search_tasks.return_value = []
-            mock_task_service.return_value = mock_task_svc
-
-            # Configure session state for dark mode enabled
-            mock_session_state.get.return_value = True
+            # Configure session state for dark mode enabled, psychedelic mode disabled
+            def mock_get(key, default=False):
+                if key == 'dark_mode':
+                    return True
+                elif key == 'psychedelic_mode':
+                    return False
+                return default
+            
+            mock_session_state.get.side_effect = mock_get
             
             # Apply dark mode
             apply_dark_mode()
@@ -116,6 +114,28 @@ class TestStreamlitFunctions(unittest.TestCase):
             css_arg = mock_markdown.call_args[0][0]
             self.assertIn('<style>', css_arg)
             self.assertIn('background-color: #121212', css_arg)
+    
+    def test_apply_psychedelic_mode(self):
+        """Test that apply_psychedelic_mode applies psychedelic CSS when enabled."""
+        # Import apply_psychedelic_mode function
+        from src.app import apply_psychedelic_mode
+
+        # Create new mocks for streamlit functions
+        with patch('streamlit.markdown') as mock_markdown, \
+             patch('streamlit.session_state') as mock_session_state:
+
+            # Configure session state for psychedelic mode enabled
+            mock_session_state.get.return_value = True
+            
+            # Apply psychedelic mode
+            apply_psychedelic_mode()
+
+            # Verify markdown was called once with CSS
+            self.assertEqual(mock_markdown.call_count, 1)
+            css_arg = mock_markdown.call_args[0][0]
+            self.assertIn('<style>', css_arg)
+            self.assertIn('linear-gradient', css_arg)
+            self.assertIn('animation: rainbow', css_arg)
 
 
 if __name__ == "__main__":

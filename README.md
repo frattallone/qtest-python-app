@@ -11,6 +11,7 @@ A simple task management application with both CLI and web interfaces.
 - Command-line interface for quick task management
 - Web interface built with Streamlit for a user-friendly experience
 - Multi-language support (English and Italian)
+- Multiple visual themes including Dark Mode and Psychedelic Mode
 
 ## Project Structure
 
@@ -105,6 +106,15 @@ The web interface provides the following pages:
 - Search Tasks: Find tasks by keyword
 
 You can change the language using the dropdown in the sidebar.
+
+### Visual Themes
+
+The web interface supports multiple visual themes:
+- **Light Mode** (default): Clean, bright interface
+- **Dark Mode**: Dark theme for reduced eye strain
+- **Psychedelic Mode**: Vibrant, animated theme with rainbow gradients and glowing effects
+
+Toggle between themes using the controls in the sidebar. Note that Psychedelic Mode overrides Dark Mode when enabled.
 
 ## Testing
 
