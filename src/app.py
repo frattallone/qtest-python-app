@@ -52,7 +52,7 @@ def main():
     # Update language if changed
     if selected_language != lang:
         st.session_state.language = selected_language
-        st.experimental_rerun()
+        st.rerun()
     
     # Navigation options
     page = st.sidebar.radio(
@@ -150,7 +150,7 @@ def display_tasks_page(task_service, lang):
             with col3:
                 if not task.completed and st.button("✓", key=f"complete_{task.id}"):
                     task_service.complete_task(task.id)
-                    st.experimental_rerun()
+                    st.rerun()
             
             st.divider()
 
@@ -228,7 +228,7 @@ def search_tasks_page(task_service, lang):
                     with col2:
                         if st.button(get_text("view", lang), key=f"view_{task.id}"):
                             st.session_state.task_to_view = task.id
-                            st.experimental_rerun()
+                            st.rerun()
                     
                     st.divider()
     
@@ -259,12 +259,12 @@ def search_tasks_page(task_service, lang):
             with col1:
                 if not task.completed and st.button(get_text("mark_as_complete", lang)):
                     task_service.complete_task(task.id)
-                    st.experimental_rerun()
+                    st.rerun()
             
             with col2:
                 if st.button(get_text("close", lang)):
                     del st.session_state.task_to_view
-                    st.experimental_rerun()
+                    st.rerun()
                 
         except TaskNotFoundException:
             st.error(get_text("task_not_found", lang))
