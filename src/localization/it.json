@@ -42,5 +42,7 @@
   "appearance": "Aspetto",
   "dark_mode": "Modalità Scura",
   "light_mode": "Modalità Chiara",
-  "enable_dark_mode": "Attiva Modalità Scura"
+  "psychedelic_mode": "Modalità Psichedelica",
+  "enable_dark_mode": "Attiva Modalità Scura",
+  "enable_psychedelic_mode": "Attiva Modalità Psichedelica"
 }

@@ -14,9 +14,82 @@ from src.utils.exceptions import TaskNotFoundException
 from src.localization.translations import get_text, LANGUAGES
 
 
+def apply_psychedelic_mode():
+    """Apply psychedelic mode styling if enabled."""
+    if st.session_state.get('psychedelic_mode', False):
+        psychedelic_css = """
+        <style>
+            @keyframes rainbow {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            
+            .stApp {
+                background: linear-gradient(-45deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #fb5607);
+                background-size: 400% 400%;
+                animation: rainbow 3s ease infinite;
+                color: #ffffff;
+            }
+            
+            section[data-testid="stSidebar"] {
+                background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+                background-size: 200% 200%;
+                animation: rainbow 2s ease infinite;
+                border-right: 3px solid #ffbe0b;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+                color: #ffffff !important;
+                text-shadow: 0 0 10px #ff006e, 0 0 20px #8338ec, 0 0 30px #3a86ff;
+                animation: pulse 2s ease-in-out infinite;
+            }
+            
+            button {
+                background: linear-gradient(45deg, #ff006e, #8338ec) !important;
+                color: #ffffff !important;
+                border: 2px solid #ffbe0b !important;
+                border-radius: 20px !important;
+                box-shadow: 0 0 15px rgba(255, 0, 110, 0.5) !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            button:hover {
+                transform: scale(1.1) !important;
+                box-shadow: 0 0 25px rgba(131, 56, 236, 0.8) !important;
+            }
+            
+            div.stTextInput > div > div > input,
+            div.stTextArea > div > div > textarea,
+            div.stSelectbox > div > div > div {
+                background: rgba(255, 255, 255, 0.1) !important;
+                color: #ffffff !important;
+                border: 2px solid #06ffa5 !important;
+                border-radius: 15px !important;
+                backdrop-filter: blur(10px) !important;
+            }
+            
+            div.stContainer {
+                background: rgba(255, 255, 255, 0.05) !important;
+                border: 1px solid rgba(255, 190, 11, 0.3) !important;
+                border-radius: 15px !important;
+                backdrop-filter: blur(5px) !important;
+                box-shadow: 0 0 20px rgba(58, 134, 255, 0.3) !important;
+            }
+        </style>
+        """
+        st.markdown(psychedelic_css, unsafe_allow_html=True)
+
+
 def apply_dark_mode():
     """Apply dark mode styling if enabled."""
-    if st.session_state.get('dark_mode', False):
+    if st.session_state.get('dark_mode', False) and not st.session_state.get('psychedelic_mode', False):
         # Dark mode CSS
         dark_mode_css = """
         <style>
@@ -109,6 +182,10 @@ def main():
     if 'dark_mode' not in st.session_state:
         st.session_state.dark_mode = False
     
+    # Initialize session state for psychedelic mode if it doesn't exist
+    if 'psychedelic_mode' not in st.session_state:
+        st.session_state.psychedelic_mode = False
+    
     # Get current language
     lang = st.session_state.language
     
@@ -145,18 +222,32 @@ def main():
         st.session_state.language = selected_language
         settings_changed = True
     
-    # Dark mode toggle
+    # Appearance toggles
     st.sidebar.title(get_text("appearance", lang))
-    dark_mode = st.sidebar.toggle(
-        get_text("enable_dark_mode", lang),
-        value=st.session_state.dark_mode
+    
+    psychedelic_mode = st.sidebar.toggle(
+        get_text("enable_psychedelic_mode", lang),
+        value=st.session_state.psychedelic_mode
     )
     
-    if dark_mode != st.session_state.dark_mode:
+    dark_mode = st.sidebar.toggle(
+        get_text("enable_dark_mode", lang),
+        value=st.session_state.dark_mode,
+        disabled=st.session_state.psychedelic_mode
+    )
+    
+    if psychedelic_mode != st.session_state.psychedelic_mode:
+        st.session_state.psychedelic_mode = psychedelic_mode
+        if psychedelic_mode:
+            st.session_state.dark_mode = False
+        settings_changed = True
+    
+    if dark_mode != st.session_state.dark_mode and not st.session_state.psychedelic_mode:
         st.session_state.dark_mode = dark_mode
         settings_changed = True
     
-    # Apply dark mode immediately
+    # Apply styling immediately
+    apply_psychedelic_mode()
     apply_dark_mode()
     
     # Rerun if any settings changed
